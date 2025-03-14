@@ -212,6 +212,15 @@ def check_streamlit_install(io):
     )
 
 
+def check_mcp_install(io):
+    return utils.check_pip_install_extra(
+        io,
+        "mcp",
+        "You need to install the aider MCP server feature",
+        ["aider-chat[mcp]"],
+    )
+
+
 def write_streamlit_credentials():
     from streamlit.file_util import get_streamlit_file_path
 
@@ -491,6 +500,16 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
     # Parse again to include any arguments that might have been defined in .env
     args = parser.parse_args(argv)
 
+    if args.mcp_server:
+        # Disable fancy input for MCP server
+        args.fancy_input = False
+        # Disable pretty output for MCP server
+        args.pretty = False
+        # Enable yes-always for MCP server
+        args.yes_always = True
+        # Enable auto-accept-architect for MCP server
+        args.auto_accept_architect = True
+
     if git is None:
         args.git = False
 
@@ -639,6 +658,17 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
         analytics.enable()
 
     analytics.event("launched")
+
+    if args.mcp_server and not return_coder:
+        if not check_mcp_install(io):
+            analytics.event("exit", reason="MCP package not installed")
+            return
+
+        from aider.mcp_server import start_server
+        analytics.event("mcp_server_session")
+        start_server(args=argv)
+        analytics.event("exit", reason="MCP server session ended")
+        return
 
     if args.gui and not return_coder:
         if not check_streamlit_install(io):

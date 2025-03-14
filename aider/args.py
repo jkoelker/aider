@@ -585,6 +585,12 @@ def get_parser(default_config_files, git_root):
         default=False,
     )
     group.add_argument(
+        "--mcp-server",
+        action=argparse.BooleanOptionalAction,
+        help="Run aider as an MCP server using stdio transport (default: False)",
+        default=False,
+    )
+    group.add_argument(
         "--copy-paste",
         action=argparse.BooleanOptionalAction,
         default=False,

@@ -77,6 +77,7 @@ for more details.
 ## Features
 
 - Run aider with the files you want to edit: `aider <file1> <file2> ...`
+- Run aider as an MCP server: `aider --mcp-server`
 - Ask for changes:
   - Add new features or test cases.
   - Describe a bug.
